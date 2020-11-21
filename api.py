@@ -1,10 +1,12 @@
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 import uuid
+import os
 
 app = Flask(__name__)
 
-app.config['SECRET_KEY'] = 'x83mvasdei2349vja33m' #bonus - put this in environ variables
+# You'll need to set the environment variable below in .profile, .zshrc, or .login
+app.config['SECRET_KEY'] = os.environ['FLASK_DB_NO_AUTH']
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///names.db'
 
 db = SQLAlchemy(app)
@@ -39,12 +41,13 @@ def add_name():
 	db.session.add(new_name)
 	db.session.commit()
 
-	return jsonify({'message': 'New name created.'})
+	return jsonify({'message': "New name created"})
 
 @app.route('/name/<name>', methods=['PUT'])
 def change_name(name):
 
-	data = request.get_json()
+	data = request.get_json() #This is returning a NoneType object
+	#When I put from the other flask app.
 
 	db_name = Name.query.filter_by(name=name).first()
 	if not db_name:
